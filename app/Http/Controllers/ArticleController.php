@@ -12,7 +12,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::all();
+        $articles = Article::paginate(5);
 
         return view('articles.index', compact('articles'));
     }
@@ -45,7 +45,9 @@ class ArticleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $article = Article::findOrFail($id);
+
+        return view('articles.show', compact('article'));
     }
 
     /**
@@ -53,7 +55,9 @@ class ArticleController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $article = Article::findOrFail($id);
+
+        return view('articles.edit', compact('article'));
     }
 
     /**
@@ -61,7 +65,14 @@ class ArticleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+        ]);
+
+        Article::where('id', $id)->update($data);
+
+        return redirect()->route('articles.index');
     }
 
     /**
@@ -69,6 +80,8 @@ class ArticleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Article::destroy($id);
+
+        return redirect()->route('articles.index');
     }
 }

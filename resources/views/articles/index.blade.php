@@ -2,15 +2,33 @@
 
 @section('content')
 <section class="px-10 py-8">
+    <a href="{{ route('articles.create') }}" class="text-white bg-purple-600 text-lg font-bold py-2 px-4 rounded mb-4 hover:bg-purple-500 block max-w-fit">
+        Create new article
+    </a>
     @foreach($articles as $article)
-        <div class="border p-4">
+        <div class="border p-4 block hover:bg-gray-100 relative">
+            <a href="{{ route('articles.show', $article) }}">
             <h2 class="text-xl font-bold">{{ $article->title }}</h2>
-            <p>{{ $article->excerpt }}</p>
-            <a href="{{ route('articles.show', $article->id) }}" class="text-blue-500 hover:underline">Read more</a>
+            <p>{{ $article->content }}</p>
+            <p class="text-gray-600 pt-2 text-sm">{{ $article->created_at->diffForHumans() }}</p>
+            </a>
+            <div class="absolute top-0 right-0 mt-2 mr-2">
+            <a href="{{ route('articles.edit', $article) }}" class="text-white bg-blue-600 text-sm font-bold py-1 px-2 rounded hover:bg-blue-500 inline-block">
+                Edit
+            </a>
+            <form action="{{ route('articles.destroy', $article) }}" method="POST" class="inline-block">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="text-white bg-red-600 text-sm font-bold py-1 px-2 rounded hover:bg-red-500 inline-block">
+                Delete
+                </button>
+            </form>
+            </div>
         </div>
     @endforeach
-    <button class="text-white bg-purple-600 text-lg font-bold py-2 px-4 rounded mt-4 hover:bg-purple-500">
-        <a href="{{ route('articles.create') }}">Create new article</a>
-    </button>
+
+    <div class="pagination absolute bottom-0 right-0 p-4 w-full">
+        {{ $articles->links() }}
+    </div>
 </section>
 @endsection
