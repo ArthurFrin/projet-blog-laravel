@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use App\Models\Category;
 
 class ArticleController extends Controller
 {
@@ -12,7 +13,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::paginate(5);
+        $articles = Article::with('category')->paginate(10);
 
         return view('articles.index', compact('articles'));
     }
@@ -22,7 +23,8 @@ class ArticleController extends Controller
      */
     public function create()
     {
-        return view('articles.create');
+        $categories = Category::all();
+        return view('articles.create', compact('categories'));
     }
 
     /**
@@ -33,10 +35,10 @@ class ArticleController extends Controller
         $data = $request->validate([
             'title' => 'required',
             'content' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
         Article::create($data);
-
         return redirect()->route('articles.index');
     }
 
@@ -56,8 +58,9 @@ class ArticleController extends Controller
     public function edit(string $id)
     {
         $article = Article::findOrFail($id);
+        $categories = Category::all();
 
-        return view('articles.edit', compact('article'));
+        return view('articles.edit', compact('article', 'categories'));
     }
 
     /**
@@ -68,9 +71,11 @@ class ArticleController extends Controller
         $data = $request->validate([
             'title' => 'required',
             'content' => 'required',
+            'category_id' => 'nullable|exists:categories,id',
         ]);
 
-        Article::where('id', $id)->update($data);
+        $article = Article::findOrFail($id);
+        $article->updateWithCategory($data);
 
         return redirect()->route('articles.index');
     }

@@ -18,6 +18,23 @@
                 <p class="text-red-500 text-s italic mt-2">{{ $message }}</p>
             @enderror
         </div>
+        <div>
+            <div class="mb-4">
+                <label for="category_id" class="block text-gray-700 text-sm font-bold mb-2">Catégorie</label>
+                <select name="category_id" id="category_id" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <option value="">Sélectionner une catégorie (optionel)</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->title }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <p class="text-red-500 text-s italic mt-2">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+        
         <button class="text-white bg-purple-600 text-lg font-bold py-2 px-4 rounded mt-4 hover:bg-purple-500" type="submit">Publier</button>
     </form>
 
