@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <form class="mx-10 py-8 border m-4 p-4 bg-gray-200" action="{{ route('articles.update', $article) }}" method="post">
+    <form class="mx-10 py-8 border m-4 p-4 bg-gray-200" action="{{ route('articles.update', $article) }}" method="post" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         <div class="mb-4">
@@ -34,6 +34,21 @@
                     <p class="text-red-500 text-s italic mt-2">{{ $message }}</p>
                 @enderror
             </div>
+        </div>
+        
+        <div class="mb-4">
+            <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image</label>
+            <input type="file" name="image" id="image" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            @error('image')
+                <p class="text-red-500 text-s italic mt-2">{{ $message }}</p>
+            @enderror
+            
+            @if($article->getFirstMedia('image'))
+                <div class="mt-2">
+                    <p class="text-sm text-gray-600">Image actuelle :</p>*
+                    <img src="{{ $article->getFirstMediaUrl('image') }}" alt="Image de l'article" class="max-w-md rounded shadow mt-2">
+                </div>
+            @endif
         </div>
         
         <button class="text-white bg-purple-600 text-lg font-bold py-2 px-4 rounded mt-4 hover:bg-purple-500" type="submit">Mettre à jour</button>

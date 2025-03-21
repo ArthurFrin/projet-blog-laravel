@@ -13,7 +13,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        $articles = Article::with('category')->paginate(10);
+        $articles = Article::with('category', 'media')->paginate(10);
 
         return view('articles.index', compact('articles'));
     }
@@ -36,9 +36,17 @@ class ArticleController extends Controller
             'title' => 'required',
             'content' => 'required',
             'category_id' => 'nullable|exists:categories,id',
+            'image' => 'nullable|image|max:2048', // Validation pour une image (max 2Mo)
         ]);
 
-        Article::create($data);
+        $article = Article::create($data);
+        
+        // Traitement de l'image s'il y en a une
+        if ($request->hasFile('image')) {
+            $article->addMediaFromRequest('image')
+                   ->toMediaCollection('image');
+        }
+
         return redirect()->route('articles.index');
     }
 
@@ -72,10 +80,21 @@ class ArticleController extends Controller
             'title' => 'required',
             'content' => 'required',
             'category_id' => 'nullable|exists:categories,id',
+            'image' => 'nullable|image|max:2048', // Validation pour une image (max 2Mo)
         ]);
 
         $article = Article::findOrFail($id);
         $article->updateWithCategory($data);
+        
+        // Traitement de l'image s'il y en a une nouvelle
+        if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image s'il y en avait une
+            $article->clearMediaCollection('image');
+            
+            // Ajouter la nouvelle image
+            $article->addMediaFromRequest('image')
+                   ->toMediaCollection('image');
+        }
 
         return redirect()->route('articles.index');
     }

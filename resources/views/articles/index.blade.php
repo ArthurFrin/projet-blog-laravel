@@ -12,6 +12,9 @@
             <p>{{ $article->content }}</p>
             <p>{{ $article->category->title ?? 'pas de categorie' }}</p>
             <p class="text-gray-600 pt-2 text-sm">{{ $article->updated_at->diffForHumans() }}</p>
+            @if($image = $article->getFirstMedia('image'))
+                <img src="{{ $image->getUrl() }}" alt="{{ $article->title }}" class="w-full h-48 object-cover mt-2 rounded">
+            @endif
             </a>
             <div class="absolute top-0 right-0 mt-2 mr-2">
             <a href="{{ route('articles.edit', $article) }}" class="text-white bg-blue-600 text-sm font-bold py-1 px-2 rounded hover:bg-blue-500 inline-block">
